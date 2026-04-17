@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Movers Commentary</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Settings Modal (shown first if no API key) -->
+    <div id="settingsOverlay" class="settings-overlay">
+        <div class="settings-modal">
+            <div class="settings-header">
+                <div class="settings-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                    </svg>
+                </div>
+                <h2>Settings</h2>
+                <p>Configure your application settings</p>
+            </div>
+            <div class="settings-body">
+                <div class="form-group">
+                    <label for="settingsApiKey">Bigdata API Key</label>
+                    <div class="api-key-input-wrapper">
+                        <input type="password" id="settingsApiKey" placeholder="Enter your Bigdata API key...">
+                        <button type="button" class="toggle-visibility-btn" onclick="toggleApiKeyVisibility()">
+                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="help-text" id="bigdataKeyHelp">Used as <code>X-API-KEY</code> for Bigdata and to access job/report APIs. Required here when the server has no <code>BIGDATA_API_KEY</code>.</span>
+                    <div id="apiKeyStatus" class="api-key-status"></div>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button type="button" class="btn btn-secondary" onclick="clearApiKey()">Clear Bigdata Key</button>
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div>
+                    <h1>Top Movers Commentary</h1>
+                    <p class="subtitle">Bigdata.com and AI-powered reports for daily gainers and decliners</p>
+                </div>
+                <button class="btn btn-secondary settings-btn" onclick="openSettings()">
+                    <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Report Form -->
+            <div class="panel form-panel">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Generate New Report
+                </h2>
+                
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="reportName">Report Name</label>
+                        <input type="text" id="reportName" value="" required autocomplete="off">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="topN">Top N Movers</label>
+                            <input type="number" id="topN" value="5" min="1" max="10">
+                            <span class="help-text">Gainers & decliners to analyze</span>
+                        </div>
+                        <div class="form-group half">
+                            <label for="daysLookback">Days Lookback</label>
+                            <input type="number" id="daysLookback" value="1" min="1" max="30">
+                            <span class="help-text">News search window</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tickers">Watchlist Tickers</label>
+                        <textarea id="tickers" rows="5" placeholder="Loading default watchlist..."></textarea>
+                        <span class="help-text">Enter tickers separated by commas (e.g., XSES:D05, XSES:O39, U11)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Topic Set</label>
+                        <select id="topicSet" class="topic-set-select" onchange="onTopicSetChange()">
+                            <option value="standard" selected>Standard Topics</option>
+                            <option value="desk_standard">Desk standard topics</option>
+                            <option value="mini">Fast Mode (Mini Topics)</option>
+                            <option value="custom">Custom Selection</option>
+                        </select>
+                        <span class="help-text" id="topicSetDescription">Movers-focused queries (earnings, analyst, M&A, regulatory, etc.).</span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="topics-header">
+                            <label>Topics (use {company} as placeholder)</label>
+                            <button type="button" class="btn btn-small btn-secondary" id="editTopicsBtn" onclick="toggleEditMode()">Edit Topics</button>
+                        </div>
+                        <div class="topics-container">
+                            <div id="topicsList" class="topics-table">
+                                <div class="loading">Loading topics...</div>
+                            </div>
+                            <div class="topics-footer">
+                                <span id="topicsCount">0 topics configured</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="addTopicSection" style="display: none;">
+                        <label>Add New Topic</label>
+                        <div class="add-topic-form">
+                            <input type="text" id="customTopicName" placeholder="Topic name (e.g., ESG)">
+                            <input type="text" id="customTopicText" placeholder="Query text with {company} placeholder">
+                            <button type="button" class="btn btn-small btn-success" onclick="addCustomTopic()">Add</button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        Generate Report
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Panel: Report History -->
+            <div class="panel history-panel">
+                <div class="panel-header">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Report History
+                    </h2>
+                    <button class="btn btn-secondary" onclick="loadReports()">
+                        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                <div id="reportsList" class="reports-list">
+                    <div class="loading">Loading reports...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report View Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Report</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <div class="loading">Loading report...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

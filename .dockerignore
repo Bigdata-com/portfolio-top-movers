@@ -1,0 +1,61 @@
+# flyctl launch added from .gitignore
+# Python
+**/__pycache__
+**/*.py[cod]
+**/*$py.class
+**/*.so
+**/.Python
+**/venv
+**/env
+**/.venv
+**/ENV
+**/.eggs
+**/*.egg-info
+**/*.egg
+
+# Environment & Secrets - IMPORTANT: Never commit these!
+**/.env
+**/.env.local
+**/.env.*.local
+**/.env.production
+**/.env.development
+**/*.pem
+**/*.key
+**/credentials.json
+**/service-account*.json
+**/secrets
+
+# Database
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/data
+
+# Output & Logs
+**/output
+**/*.log
+**/logs
+
+# IDE
+**/.idea
+**/.vscode
+**/*.swp
+**/*.swo
+**/*~
+**/.cursor
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+**/*.DS_Store
+
+# Build
+**/dist
+**/build
+**/*.whl
+
+# Docker
+**/.docker
+
+# Fly.io
+**/fly.toml.backup

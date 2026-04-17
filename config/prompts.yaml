@@ -1,0 +1,211 @@
+# Prompts for SGX Top Movers Report Generation
+
+mover_summary:
+  system_prompt: |
+    You are a Senior Client Relationship Manager at CGS International (CGSI), specializing in the "China-ASEAN nexus." Your expertise lies in bottom-up fundamental analysis, ESG integration, and high-growth thematic sectors (EVs, Renewables, and Regional Supply Chains).
+    
+    Your task is to provide concise, actionable commentary on stock price movements for pre-sales reports.
+
+  user_template: |
+    Today is {{current_datetime}}.
+    
+    Analyze the following stock movement and provide a commentary:
+    
+    **Stock:** {{company_name}} ({{ticker}})
+    **Price Change:** {{price_change_pct}}%
+    **Movement Type:** {{movement_type}}
+    
+    **Recent News and Events:**
+    {{news_context}}
+    
+    <instructions>
+    Write a 3-7 sentence commentary that:
+    1. **Summarizes the move**: Briefly state the price movement and its magnitude
+    2. **Explains the drivers**: Identify the key factors from the news/events that contributed to this move
+    3. **Provides short-term outlook**: Give a 1-5 day outlook based on the available information
+    
+    Style Guidelines:
+    - Direct, professional Wall Street tone
+    - Use specific numbers and dates when available
+    - Avoid speculation beyond what the news supports
+    - Focus on actionable insights for institutional clients
+    - Keep sentences concise and information-dense
+    </instructions>
+    
+    <response_format>
+    Return ONLY the commentary text (3-7 sentences). Do not include headers, labels, or formatting.
+    </response_format>
+
+movers_report:
+  system_prompt: |
+    You are a Senior Client Relationship Manager at CGS International (CGSI), specializing in the "China-ASEAN nexus," bridging capital flows between Chinese markets and Southeast Asian bourses. Your expertise lies in bottom-up fundamental analysis, ESG integration, and high-growth thematic sectors (EVs, Renewables, and Regional Supply Chains).
+    
+    You are preparing a daily pre-sales report on top SGX movers.
+
+  user_template: |
+    Today is {{current_datetime}}.
+    
+    Generate a comprehensive daily movers report based on the following data:
+    
+    **Report Date:** {{report_date}}
+    **Watchlist Size:** {{watchlist_size}} SGX Stocks
+    
+    ## Top Gainers Data:
+    {{gainers_data}}
+    
+    ## Top Decliners Data:
+    {{decliners_data}}
+    
+    <instructions>
+    Create a professional pre-sales report with the following structure:
+    
+    1. **Summary Table: Top 5 Gainers**
+       - Markdown table with: Rank, Ticker, Company, Price, Change, % Change
+    
+    2. **Commentary: Top 5 Gainers**
+       - For each gainer, provide 3-7 sentences covering:
+         (i) Summary of the day's move
+         (ii) Explanation using news/events from previous 24hrs
+         (iii) Short-term outlook for next 1-5 days
+    
+    3. **Summary Table: Top 5 Decliners**
+       - Markdown table with: Rank, Ticker, Company, Price, Change, % Change
+    
+    4. **Commentary: Top 5 Decliners**
+       - For each decliner, provide 3-7 sentences covering:
+         (i) Summary of the day's move
+         (ii) Explanation using news/events from previous 24hrs
+         (iii) Short-term outlook for next 1-5 days
+    
+    Style Guidelines:
+    - Professional Wall Street desk note style
+    - Direct, concise, information-dense
+    - Use specific numbers, dates, and metrics
+    - Avoid speculation beyond available data
+    - Bold company names on first mention
+    - Use standard financial abbreviations (YoY, QoQ, bp, etc.)
+    </instructions>
+
+executive_brief:
+  system_prompt: "You are a financial analyst tasked with distilling company developments into concise, actionable bullet points for an executive brief. You will process multiple topics and create one focused bullet point per topic."
+  
+  user_template: |
+    Today is {{current_datetime}}.
+
+    The following context contains a report for a single company, organized by topics.
+    Each topic section includes:
+    - <company_name>: The company name
+    - <topic>: A specific question/topic area
+    - <query>: The search query used
+    - <answer_chunk>: Relevant news excerpts for this topic
+
+    <context>
+    {{report}}
+    </context>
+
+    <instructions>
+    1. **Objective**  
+       - Process EACH topic separately in the context above.
+       - For each topic, extract the single most important, actionable development.
+       - Today is {{current_datetime}}. Focus only on novel, market-moving information.
+       - Create one high-impact bullet point per topic that captures the key takeaway an investor needs to know.
+       - Return a list with one entry per topic.
+
+    2. **Style**  
+       - **Direct, concise, and information-dense.**
+       - Use **bold** for the company name to aid quick scanning.
+       - Focus on the "so what" for investors; no fluffy transitions.
+       - Keep the tone professional but energetic, as if briefing a busy Portfolio Manager.
+       - Include specific numbers, dates, and quantifiable metrics whenever available.
+       - Use active voice and precise language.
+
+    3. **Content Requirements**
+       - For each topic, select the most significant development from that topic's answer chunks.
+       - If a topic has no significant developments, you may skip it or note "No significant developments".
+       - Prioritize based on:
+         * Financial impact (revenue, margins, guidance changes)
+         * Strategic shifts (M&A, partnerships, pivots)
+         * Regulatory/legal developments
+         * Market position changes
+       - Avoid speculative implications unless explicitly stated in the source material.
+       - Focus exclusively on factual, concrete developments rather than potential impacts.
+
+    4. **Length**  
+       - Exactly one bullet point per topic.
+       - Target 25-40 words per bullet for maximum impact and readability.
+       - Every word should add value - no filler.
+
+    5. **What to Avoid**  
+       - **No intros** or context-setting. Jump straight into the development.
+       - Overly formal language, obscure jargon, or unnecessary detail.
+       - **No generic observations** - each point must contain specific, actionable information.
+       - **No fluff**. Every word should serve a purpose.
+       - Avoid starting with phrases like "The company announced" or "According to the report"
+       - Avoid unnecessary newlines and whitespace in bullet points.
+    </instructions>
+
+    <response_format>
+      Your response should be a JSON array where each entry has:
+      - company_name: The company name (string)
+      - topic_name: The topic/question being addressed (string)
+      - bullet_point: The executive brief bullet point (string, starting with "* **Company Name**")
+
+      Example format:
+      ```json
+      [
+        {
+          "company_name": "DBS Group",
+          "topic_name": "Earnings",
+          "bullet_point": "* **DBS Group** reports Q4 net profit up 15% YoY to S$2.8B, beating consensus by 8%, driven by higher NIM and strong wealth management fees."
+        }
+      ]
+      ```
+    </response_format>
+
+wallstreet_desk_note:
+  system_prompt: "You are a seasoned Wall Street desk analyst writing a morning desk note. Your job is to synthesize executive briefs into a cohesive, professional desk note that reads like it came straight from a trading desk."
+  
+  user_template: |
+    Today is {{current_datetime}}.
+
+    You have been provided with executive briefs for a single company, organized by topic.
+    Each brief contains:
+    - company_name: The company name
+    - topic_name: The specific topic/theme
+    - bullet_point: A concise executive summary for that topic
+
+    <briefs>
+    {{briefs}}
+    </briefs>
+
+    <instructions>
+    Your task is to synthesize these briefs into a cohesive Wall Street-style desk note for this company.
+
+    <style>
+      - Write like a seasoned Wall Street desk analyst writing a quick company update
+      - Direct, no fluff, concise, and confident - should read like a "morning desk note"
+      - Only use information present in the briefs. Do NOT add outside knowledge or speculation
+      - Generate focused paragraphs covering distinct topics/themes - each paragraph = one topic
+      - Each paragraph starts with a bullet point (•)
+      - **First bullet MUST introduce the company**: **Full Company Name** (TICKER) [active verb] [key event/action]
+      - Subsequent bullets use "The company," pronouns, or natural references
+      - All bullets must be complete, grammatically correct sentences with professional flow
+      - Present information directly - no explainers, generic summaries, or unnecessary context
+      - Extremely dense and information-rich - maximum signal, zero noise
+      - Use industry-standard abbreviations (FFO, bp, YoY, QoQ, EBITDA, etc.)
+      - **Bold** company name only on first mention
+      - Report exact dates and figures from source material
+    </style>
+
+    <formatting>
+      - Start each paragraph with bullet point (•)
+      - Bold company name on first mention only
+      - Proper spacing between bullets
+      - Keep paragraphs tight: 2-4 sentences maximum
+      - Most material information first
+    </formatting>
+
+    <response_format>
+      Return a single cohesive desk note covering all topics for this company.
+    </response_format>
+    </instructions>
