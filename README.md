@@ -6,6 +6,8 @@ Demo-friendly **Top Movers** report generator: sample tickers from **SGX**, **To
 
 This application generates reports showing **Top 5 Gainers** and **Top 5 Decliners** from a configurable multi-exchange watchlist (default: TSX, SGX, and Nasdaq names), with AI-powered news analysis and commentary for each mover.
 
+**Cadence:** The defaults are a good fit for a **daily or weekly** run. If you need a **longer lookback**, a **higher run frequency**, or other behavior beyond that, you will likely need **additional steps in the pipeline**—in that case, reach out to your **sales executive**.
+
 ## Workflow
 
 The browser or API client starts a **background job** (`run_movers_workflow`). **Bigdata** supplies company resolution, prices, and news search; the **LLM** turns news context into desk-style commentary; the **pipeline** ranks movers, assembles markdown, and persists the result.
