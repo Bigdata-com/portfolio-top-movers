@@ -12,6 +12,7 @@ ENV/
 .eggs/
 *.egg-info/
 *.egg
+**/uv.lock
 
 # Environment & Secrets - IMPORTANT: Never commit these!
 .env
