@@ -10,53 +10,31 @@ This application generates reports showing **Top 5 Gainers** and **Top 5 Decline
 
 ## Workflow
 
-The browser or API client starts a **background job** (`run_movers_workflow`). **Bigdata** supplies company resolution, prices, and news search; the **LLM** turns news context into desk-style commentary; the **pipeline** ranks movers, assembles markdown, and persists the result.
+High-level flow (same pipeline as the [playground notebook](notebooks/top_movers_playground.ipynb)):
 
-```text
-                                +---------------------------+
-                                |    Client (UI or HTTP)    |
-                                +-------------+-------------+
-                                              |
-                       watchlist, top_n, etc. | X-API-KEY (Bigdata)
-                                              v
-                                +---------------------------+
-                                |     POST /api/report      |
-                                |   FastAPI + JobStorage    |
-                                +-------------+-------------+
-                                              |
-                                              | (spawn background task)
-                                              v
-+---------------------------------------------------------------------------------------+
-|                            PIPELINE: run_movers_workflow                              |
-+---------------------------------------------------------------------------------------+
-|                                                                                       |
-|   +---------------------+     +---------------------+     +-----------------------+   |
-|   |  Bigdata: Company   |     |   Bigdata: Price    |     |  Bigdata: Topic/News  |   |
-|   |  (Entity + Name)    |     |  (Change % / Px)    |     |   (Parallel Search)   |   |
-|   +----------+----------+     +----------+----------+     +-----------+-----------+   |
-|              |                           |                            |               |
-|              v                           v                            v               |
-|      entity_id / ticker         rank top N movers            headlines + text         |
-|              |                           |                            |               |
-|              +---------------------------+----------------------------+               |
-|                                          |                                            |
-|                                          v                                            |
-|                            +---------------------------+                              |
-|                            |   LLM (OpenAI / Gemini)   |                              |
-|                            |    (Summary per mover)    |                              |
-|                            +-------------+-------------+                              |
-|                                          |                                            |
-|                                          v                                            |
-|                            +---------------------------+                              |
-|                            |   Final Markdown Report   |                              |
-|                            |    (Output + Job Status)  |                              |
-|                            +---------------------------+                              |
-|                                                                                       |
-+---------------------------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    Client["Client infra<br/>watchlist · topics · lookback"]
+    Resolve["Resolve rp_entity_id<br/>onboarding or Bigdata Knowledge Graph API"]
+    Prices["Bigdata.com — Prices"]
+    Search["Bigdata.com — Search"]
+    Rank["Rank top N movers"]
+    LLM["LLM"]
+    Report["Markdown report"]
+
+    Client --> Resolve
+    Resolve --> Prices
+    Resolve --> Search
+    Prices --> Rank
+    Rank --> LLM
+    Search --> LLM
+    LLM --> Report
 ```
 
-
-Optional: **TopicSearchService** may use the same LLM provider for **query reformulation** before hitting Bigdata search, depending on configuration.
+1. **Client infra** supplies tickers, topics, and lookback (web UI, API, or notebook).
+2. **`rp_entity_id`** is resolved once — typically during **onboarding**, or at runtime via the **Bigdata Knowledge Graph API**.
+3. **Bigdata.com** provides **prices** (to rank movers) and **search** (news/topic context for those movers).
+4. An **LLM** turns that context into short commentary; the pipeline emits a **markdown report**.
 
 ### Features
 
